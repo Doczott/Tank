@@ -1,0 +1,98 @@
+
+input = {...}
+tankLength = tonumber(input[1])
+tankWidth = tonumber(input[1])
+tankHeight = tonumber(input[1])
+
+
+currentSlot = 1
+
+-- edgeslot is the slot for the materials that will be used to construct the corners of the tank. sideslot is the slot
+-- for the materials that will be used to construct the sides of the tank. (ie. stone corners with glass sides)
+edgeSlot = 1
+sideSlot = 5
+
+-- If this inventory slot runs out of building blocks, resupply from the ender chest in the next slot.
+function checkSlot()
+  if turtle.getItemCount(currentSlot) == 0 then
+    turtle.select(currentSlot + 1)
+    turtle.placeUp()
+    turtle.select(currentSlot)
+    sleep(1)
+    turtle.suckUp()
+    turtle.select(currentSlot + 1)
+    sleep(1)
+    turtle.digUp()
+    sleep(1)
+    turtle.select(currentSlot)
+  end
+end
+
+-- This is where the code starts running.
+currentSlot = edgeSlot
+checkSlot()
+currentSlot = sideSlot
+checkSlot()
+turtle.up()
+left = true
+
+for height = 1, tankHeight do
+for width = 1, tankWidth do
+for length = 1, tankLength do
+
+th = height == 1 or height == tankHeight
+tw = width == 1 or width == tankWidth
+tl = length == 1 or length == tankLength
+
+if th and tw then
+  currentSlot = edgeSlot
+else if th and tl then
+  currentSlot = edgeSlot
+else if tw and tl then
+  currentSlot = edgeSlot
+else
+  currentSlot = sideSlot
+end
+end
+end
+
+if th or tw or tl then  
+  checkSlot()
+  turtle.select(currentSlot)
+  turtle.placeDown()
+end
+
+if length < tankLength then
+  turtle.forward()
+end
+  
+end
+
+if width < tankWidth then
+  if left then
+    turtle.turnLeft()
+	   turtle.forward()
+	   turtle.turnLeft()
+  else
+    turtle.turnRight()
+    turtle.forward()
+    turtle.turnRight()
+  end	
+  left = not left
+else
+  rot = tankWidth % 2
+  if rot == 1 then
+    left = true
+  else
+    rot = height % 2
+    left = rot == 0
+  end
+end
+
+end
+
+turtle.up()
+turtle.turnLeft()
+turtle.turnLeft()
+
+end
